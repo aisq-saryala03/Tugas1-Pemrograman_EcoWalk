@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // ============ ALAMAT GAMBAR (ubah di sini kalau nama file berbeda) ============
 const imgLogoHijau = 'lib/images/logo_ecowalk_hijau.png';
@@ -27,19 +29,60 @@ class Akun {
   });
 }
 
+// Akun bawaan: selalu ada setiap aplikasi dibuka
 final List<Akun> daftarAkun = [
   Akun(
-    nama: 'aisq',
-    email: 'aisqsaryala06@gmail.com',
-    hp: '0811111111',
+    nama: 'Aisq',
+    email: 'aisqsaryala@gmail.com',
+    hp: '081234567890',
     sandi: '123456',
   ),
 ];
 
 Akun? akunAktif;
 
+// Ambil akun yang pernah didaftarkan dari penyimpanan HP
+Future<void> muatAkun() async {
+  final prefs = await SharedPreferences.getInstance();
+  final data = prefs.getString('akun_tersimpan');
+  if (data == null) return;
+
+  final List list = jsonDecode(data);
+  for (final item in list) {
+    final email = item['email'] as String;
+    final sudahAda =
+        daftarAkun.any((a) => a.email.toLowerCase() == email.toLowerCase());
+    if (!sudahAda) {
+      daftarAkun.add(Akun(
+        nama: item['nama'],
+        email: email,
+        hp: item['hp'],
+        sandi: item['sandi'],
+      ));
+    }
+  }
+}
+
+// Simpan semua akun ke penyimpanan HP
+Future<void> simpanAkun() async {
+  final prefs = await SharedPreferences.getInstance();
+  final data = jsonEncode(daftarAkun
+      .map((a) => {
+            'nama': a.nama,
+            'email': a.email,
+            'hp': a.hp,
+            'sandi': a.sandi,
+          })
+      .toList());
+  await prefs.setString('akun_tersimpan', data);
+}
+
 // ============ TITIK AWAL APLIKASI ============
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await muatAkun();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -56,9 +99,6 @@ class MyApp extends StatelessWidget {
 
 // ============ WIDGET BANTUAN (dipakai berulang) ============
 
-// Logo ECOWALK. [lebar] dalam piksel.
-// isi: bagian gambar yang dipakai (1.0 = semua, 0.8 = ruang kosong kiri-kanan
-// dipotong). Kalau gambar gagal dibaca, tampil pengganti dan pesan di terminal.
 Widget logo(String path, double lebar, Color warna, {double isi = 1.0}) {
   return ClipRect(
     child: Align(
@@ -88,8 +128,6 @@ Widget logo(String path, double lebar, Color warna, {double isi = 1.0}) {
   );
 }
 
-// Kolom isian. Kalau sandi: true, ikon mata bisa ditekan.
-// errorText = tulisan merah di bawah kolom (null = tidak ada).
 class KolomIsian extends StatefulWidget {
   final String hint;
   final IconData? ikon;
@@ -148,13 +186,15 @@ class _KolomIsianState extends State<KolomIsian> {
       style: const TextStyle(fontSize: 13),
       decoration: InputDecoration(
         hintText: widget.hint,
-        hintStyle: TextStyle(fontSize: 13, fontStyle: FontStyle.italic, color: Colors.grey.shade600),
+        hintStyle: TextStyle(
+            fontSize: 13,
+            fontStyle: FontStyle.italic,
+            color: Colors.grey.shade600),
         errorText: widget.errorText,
         errorStyle: TextStyle(fontSize: 10, color: Colors.red.shade600),
         prefixIcon: widget.ikon == null
             ? null
             : Icon(widget.ikon, size: 18, color: Colors.grey.shade700),
-        // ikon mata: bisa ditekan
         suffixIcon: widget.sandi
             ? IconButton(
                 onPressed: () => setState(() => tersembunyi = !tersembunyi),
@@ -174,8 +214,7 @@ class _KolomIsianState extends State<KolomIsian> {
         errorBorder: borderError,
         focusedErrorBorder: borderError,
         focusedBorder: widget.garis
-            ? const UnderlineInputBorder(
-                borderSide: BorderSide(color: hijau))
+            ? const UnderlineInputBorder(borderSide: BorderSide(color: hijau))
             : OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: const BorderSide(color: hijau),
@@ -185,7 +224,6 @@ class _KolomIsianState extends State<KolomIsian> {
   }
 }
 
-// Kolom isian (kotak abu)
 Widget kolom(
   String hint,
   IconData ikon, {
@@ -204,12 +242,10 @@ Widget kolom(
   );
 }
 
-// Kolom isian (garis bawah)
 Widget kolomGaris(String hint, IconData? ikon, {bool sandi = false}) {
   return KolomIsian(hint: hint, ikon: ikon, sandi: sandi, garis: true);
 }
 
-// Tombol hijau. [berat] = tebal tulisan (default bold).
 Widget tombol(String teks, VoidCallback aksi,
     {FontWeight berat = FontWeight.bold}) {
   return SizedBox(
@@ -228,9 +264,6 @@ Widget tombol(String teks, VoidCallback aksi,
   );
 }
 
-// Judul kecil + logo di atas halaman
-// kiri: true = rata kiri sejajar tepi logo (Registrasi)
-// jarak = jarak antar huruf, lebarLogo = lebar logo, ukuranTeks = besar tulisan
 Widget judul(String teks,
     {bool kiri = false,
     double jarak = 3,
@@ -272,7 +305,6 @@ Widget judul(String teks,
   );
 }
 
-// Bentuk header miring
 class PotongMiring extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -287,7 +319,6 @@ class PotongMiring extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
-// Header abu kehijauan (Verifikasi, Lupa Sandi, Ubah Sandi)
 Widget header([String sub = '']) {
   return ClipPath(
     clipper: PotongMiring(),
@@ -322,7 +353,6 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    // setelah 2 detik pindah ke Login
     Timer(const Duration(seconds: 2), () {
       if (!mounted) return;
       Navigator.pushReplacement(
@@ -365,7 +395,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final userCtrl = TextEditingController();
   final sandiCtrl = TextEditingController();
-  String? errUser; // tulisan merah di bawah kolom (null = tidak ada)
+  String? errUser;
   String? errSandi;
 
   @override
@@ -375,58 +405,44 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  // Dicek dulu. Kalau ada yang kosong, tidak pindah halaman.
-void masuk() {
-  // Cek apakah kolom sudah diisi
-  setState(() {
-    errUser = userCtrl.text.trim().isEmpty
-        ? 'Nama pengguna wajib diisi'
-        : null;
+  void masuk() {
+    setState(() {
+      errUser =
+          userCtrl.text.trim().isEmpty ? 'Nama pengguna wajib diisi' : null;
+      errSandi = sandiCtrl.text.isEmpty ? 'Kata sandi wajib diisi' : null;
+    });
 
-    errSandi = sandiCtrl.text.isEmpty
-        ? 'Kata sandi wajib diisi'
-        : null;
-  });
+    if (errUser != null || errSandi != null) {
+      return;
+    }
 
-  // Jika masih ada kolom kosong, berhenti
-  if (errUser != null || errSandi != null) {
-    return;
-  }
+    final inputUser = userCtrl.text.trim().toLowerCase();
 
-  // Ambil nama pengguna atau email
-  final inputUser = userCtrl.text.trim().toLowerCase();
+    final cocok = daftarAkun.where((a) =>
+        (a.email.toLowerCase() == inputUser ||
+            a.nama.toLowerCase() == inputUser ||
+            a.hp == userCtrl.text.trim()) &&
+        a.sandi == sandiCtrl.text);
 
-  // Cari akun yang sesuai
-  final cocok = daftarAkun.where((a) =>
-      (a.email.toLowerCase() == inputUser ||
-          a.nama.toLowerCase() == inputUser ||
-          a.hp == userCtrl.text.trim()) &&
-      a.sandi == sandiCtrl.text);
+    if (cocok.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Akun atau kata sandi salah'),
+        ),
+      );
+      return;
+    }
 
-  // Jika akun tidak ditemukan
-  if (cocok.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Akun atau kata sandi salah'),
+    akunAktif = cocok.first;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const ProfilePage(),
       ),
     );
-    return;
   }
 
-  // Simpan akun yang berhasil login
-  akunAktif = cocok.first;
-
-  // Pindah ke halaman profil
-  Navigator.pushReplacement(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const ProfilePage(),
-    ),
-  );
-}
-
-
-  // label kecil di atas kolom
   Widget label(String teks) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
@@ -434,7 +450,6 @@ void masuk() {
     );
   }
 
-  // garis yang memudar di ujung (kiri/kanan "Atau")
   Widget garisPudar(bool kiri) {
     return Expanded(
       child: Container(
@@ -480,7 +495,7 @@ void masuk() {
                 kolom(
                   '',
                   Icons.lock,
-                  sandi: true, // mata bisa ditekan
+                  sandi: true,
                   controller: sandiCtrl,
                   errorText: errSandi,
                   onChanged: (_) {
@@ -489,11 +504,9 @@ void masuk() {
                 ),
                 const SizedBox(height: 40),
 
-                // Tombol MASUK (tulisan lebih tebal)
                 tombol('MASUK', masuk, berat: FontWeight.w900),
                 const SizedBox(height: 14),
 
-                // Lupa Kata Sandi?
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -512,7 +525,6 @@ void masuk() {
                 ),
                 const SizedBox(height: 22),
 
-                // Garis "Atau"
                 Row(
                   children: [
                     garisPudar(true),
@@ -525,7 +537,6 @@ void masuk() {
                 ),
                 const SizedBox(height: 26),
 
-                // Tombol Google (putih + bayangan)
                 Material(
                   color: Colors.white,
                   elevation: 3,
@@ -563,7 +574,6 @@ void masuk() {
                 ),
                 const SizedBox(height: 40),
 
-                // Pindah ke Registrasi
                 Center(
                   child: GestureDetector(
                     onTap: () {
@@ -610,9 +620,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final sandiCtrl = TextEditingController();
   final konfirmCtrl = TextEditingController();
 
-  bool setuju = false; // status checkbox
+  bool setuju = false;
 
-  // tulisan merah di bawah kolom (null = tidak ada)
   String? errNama, errEmail, errHp, errSandi, errKonfirm, errSetuju;
 
   @override
@@ -625,7 +634,6 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  // Dicek dulu. Kalau ada yang belum benar, tidak pindah ke Verifikasi.
   void buatAkun() {
     final nama = namaCtrl.text.trim();
     final email = emailCtrl.text.trim();
@@ -678,21 +686,24 @@ class _RegisterPageState extends State<RegisterPage> {
         errSandi != null ||
         errKonfirm != null ||
         errSetuju != null;
-    if (adaError) return; // belum lengkap, tetap di halaman ini
+    if (adaError) return;
 
     final emailBaru = emailCtrl.text.trim().toLowerCase();
     if (daftarAkun.any((a) => a.email.toLowerCase() == emailBaru)) {
       ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Email sudah terdaftar')),
-        );
-        return;
+        const SnackBar(content: Text('Email sudah terdaftar')),
+      );
+      return;
     }
+
+    // simpan akun baru (hanya SATU kali) lalu tulis ke penyimpanan HP
     daftarAkun.add(Akun(
       nama: namaCtrl.text.trim(),
       email: emailCtrl.text.trim(),
       hp: hpCtrl.text.trim(),
       sandi: sandiCtrl.text,
     ));
+    simpanAkun();
 
     Navigator.push(
       context,
@@ -711,7 +722,7 @@ class _RegisterPageState extends State<RegisterPage> {
             child: Column(
               children: [
                 Transform.translate(
-                  offset: const Offset(0, -40), // angka minus = naik
+                  offset: const Offset(0, -40),
                   child: judul('BUAT AKUN',
                       kiri: true,
                       jarak: 0.5,
@@ -762,7 +773,6 @@ class _RegisterPageState extends State<RegisterPage> {
                     }),
                 const SizedBox(height: 14),
 
-                // Checkbox persetujuan
                 Row(
                   children: [
                     Checkbox(
@@ -778,7 +788,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         TextSpan(
                           style: TextStyle(fontSize: 11),
                           children: [
-                            TextSpan(text: 'Saya telah membaca dan menyetujui '),
+                            TextSpan(
+                                text: 'Saya telah membaca dan menyetujui '),
                             TextSpan(
                                 text: 'persyaratan dan privasi pengguna',
                                 style: TextStyle(color: biru)),
@@ -800,11 +811,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 const SizedBox(height: 16),
 
-                // Tombol BUAT AKUN (dicek dulu sebelum ke Verifikasi)
                 tombol('BUAT AKUN', buatAkun, berat: FontWeight.w800),
                 const SizedBox(height: 20),
 
-                // Sudah punya akun? Masuk -> kembali ke Login
                 GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: const Text.rich(
@@ -829,7 +838,7 @@ class _RegisterPageState extends State<RegisterPage> {
 // ============ 4. VERIFIKASI ============
 class VerificationPage extends StatefulWidget {
   final bool lewatHp;
-  final bool untukReset; // true = datang dari Lupa Kata Sandi
+  final bool untukReset;
 
   const VerificationPage(
       {super.key, this.lewatHp = true, this.untukReset = false});
@@ -858,7 +867,6 @@ class _VerificationPageState extends State<VerificationPage> {
     super.dispose();
   }
 
-  // satu kotak kode
   Widget kotakKode(int i) {
     return SizedBox(
       width: 82,
@@ -902,7 +910,6 @@ class _VerificationPageState extends State<VerificationPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===== header =====
             RepaintBoundary(
               child: SizedBox(
                 height: 275,
@@ -981,7 +988,6 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                   const SizedBox(height: 44),
 
-                  // 4 kotak kode
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -1016,7 +1022,6 @@ class _VerificationPageState extends State<VerificationPage> {
                             borderRadius: BorderRadius.circular(6)),
                       ),
                       onPressed: () {
-                        // wajib isi 4 kotak dulu
                         if (kode.any((c) => c.text.trim().isEmpty)) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -1062,7 +1067,6 @@ class _VerificationPageState extends State<VerificationPage> {
   }
 }
 
-// potongan miring header Verifikasi (kiri lebih tinggi dari kanan)
 class PotongVerif extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -1103,7 +1107,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===== header: logo + LUPA KATA SANDI =====
             RepaintBoundary(
               child: SizedBox(
                 height: 275,
@@ -1148,7 +1151,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 children: [
                   const SizedBox(height: 22),
 
-                  // lonceng + keterangan
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -1308,7 +1310,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     );
   }
 
-  // satu kolom kata sandi (ikon gembok, isian, ikon mata, garis bawah)
   Widget kolomSandi({
     required String hint,
     required TextEditingController controller,
@@ -1368,7 +1369,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ===== header: logo + LUPA KATA SANDI =====
             RepaintBoundary(
               child: SizedBox(
                 height: 275,
@@ -1414,7 +1414,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   const SizedBox(height: 38),
                   const Text(
                     'Masukan Kata Sandi Baru',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
                   ),
                   const SizedBox(height: 44),
 
@@ -1620,11 +1621,9 @@ class ProfilePage extends StatelessWidget {
                   const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
           const SizedBox(height: 7),
 
-          // Email (kotak hijau) - lebar mengikuti tulisan
           Center(
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
               decoration: BoxDecoration(
                 color: hijau,
                 borderRadius: BorderRadius.circular(4),
