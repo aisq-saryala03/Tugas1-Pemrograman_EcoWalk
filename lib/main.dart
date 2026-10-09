@@ -29,10 +29,10 @@ class Akun {
 
 final List<Akun> daftarAkun = [
   Akun(
-    nama: 'Aisq Saryala',
-    email: 'aisqsaryala@gmail.com',
-    hp: '081234567890',
-    sandi: 'ecowalk123',
+    nama: 'aisq',
+    email: 'aisqsaryala06@gmail.com',
+    hp: '0811111111',
+    sandi: '123456',
   ),
 ];
 
@@ -1466,11 +1466,6 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  // Ganti nama dan email di sini
-  static const String nama = 'AISQ SARYALA';
-  static const String email = 'aisqsaryala@gmail.com';
-
-  // Foto bulat (124) dengan garis putih
   Widget foto() {
     return Container(
       width: 124,
@@ -1493,7 +1488,6 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-   // Satu baris menu (tulisan 18, ikon 28, tiap baris setinggi 68)
   Widget menu(IconData ikon, String teks, [VoidCallback? aksi]) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1524,13 +1518,11 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Menu bawah: 3 ikon + lingkaran AKUN yang menonjol ke atas
   Widget navBawah() {
     return SizedBox(
       height: 118,
       child: Stack(
         children: [
-          // batang hijau
           Positioned(
             left: 0,
             right: 0,
@@ -1554,7 +1546,6 @@ class ProfilePage extends StatelessWidget {
                     ),
                   ),
                   Expanded(
-                    // balon chat + hati di dalamnya
                     child: Center(
                       child: Stack(
                         alignment: Alignment.center,
@@ -1563,20 +1554,18 @@ class ProfilePage extends StatelessWidget {
                               color: Colors.white, size: 40),
                           Padding(
                             padding: EdgeInsets.only(bottom: 3),
-                            child: Icon(Icons.favorite,
-                                color: hijau, size: 17),
+                            child:
+                                Icon(Icons.favorite, color: hijau, size: 17),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Expanded(child: SizedBox()), // tempat lingkaran AKUN
+                  Expanded(child: SizedBox()),
                 ],
               ),
             ),
           ),
-
-          // lingkaran AKUN
           Positioned(
             top: 0,
             right: 29,
@@ -1584,7 +1573,8 @@ class ProfilePage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 86, height: 86,
+                  width: 86,
+                  height: 86,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: Colors.white,
@@ -1608,11 +1598,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final nama = (akunAktif?.nama ?? '').toUpperCase();
+    final email = akunAktif?.email ?? '';
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
         children: [
-          // Latar hijau + foto yang menonjol ke bawah
           Stack(
             clipBehavior: Clip.none,
             alignment: Alignment.center,
@@ -1623,29 +1615,29 @@ class ProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 74),
 
-          // Nama
-          const Text(nama,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
+          Text(nama,
+              style:
+                  const TextStyle(fontSize: 24, fontWeight: FontWeight.w900)),
           const SizedBox(height: 7),
 
-          // Email (kotak hijau)
-          Container(
-            width: 190,
-            height: 24,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: hijau,
-              borderRadius: BorderRadius.circular(4),
+          // Email (kotak hijau) - lebar mengikuti tulisan
+          Center(
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+              decoration: BoxDecoration(
+                color: hijau,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(email,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500)),
             ),
-            child: const Text(email,
-                style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500)),
           ),
           const SizedBox(height: 24),
 
-          // Daftar menu (bisa digulir kalau layar kecil)
           Expanded(
             child: ListView(
               padding: EdgeInsets.zero,
@@ -1657,6 +1649,7 @@ class ProfilePage extends StatelessWidget {
                 menu(Icons.fact_check_outlined, 'Ketentuan Layanan'),
                 Builder(
                   builder: (context) => menu(Icons.logout, 'Keluar', () {
+                    akunAktif = null;
                     Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (_) => const LoginPage()),
