@@ -27,7 +27,15 @@ class Akun {
   });
 }
 
-final List<Akun> daftarAkun = [];
+final List<Akun> daftarAkun = [
+  Akun(
+    nama: 'Aisq Saryala',
+    email: 'aisqsaryala@gmail.com',
+    hp: '081234567890',
+    sandi: 'ecowalk123',
+  ),
+];
+
 Akun? akunAktif;
 
 // ============ TITIK AWAL APLIKASI ============
