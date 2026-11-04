@@ -19,6 +19,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // Controller login (kosong saat halaman dibuka)
   final userCtrl = TextEditingController();
   final sandiCtrl = TextEditingController();
 
@@ -32,51 +33,61 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void masuk() {
-    setState(() {
-      errUser = userCtrl.text.trim().isEmpty
-          ? 'Nama pengguna wajib diisi'
-          : null;
+void masuk() {
+  setState(() {
+    errUser = userCtrl.text.trim().isEmpty
+        ? 'Nama pengguna wajib diisi'
+        : null;
 
-      errSandi = sandiCtrl.text.isEmpty
-          ? 'Kata sandi wajib diisi'
-          : null;
-    });
+    errSandi = sandiCtrl.text.isEmpty
+        ? 'Kata sandi wajib diisi'
+        : null;
+  });
 
-    if (errUser != null || errSandi != null) {
-      return;
-    }
+  if (errUser != null || errSandi != null) {
+    return;
+  }
 
-    final inputUser = userCtrl.text.trim().toLowerCase();
+  final inputUser = userCtrl.text.trim().toLowerCase();
+  final inputSandi = sandiCtrl.text;
 
-    final cocok = daftarAkun.where(
-      (a) =>
-          (a.email.toLowerCase() == inputUser ||
-              a.nama.toLowerCase() == inputUser ||
-              a.hp == userCtrl.text.trim()) &&
-          a.sandi == sandiCtrl.text,
+  // Login akun demo dosen
+  final loginDosen =
+      inputUser == 'user' && inputSandi == '1234';
+
+  // Login akun pribadi atau akun hasil registrasi
+  final cocok = daftarAkun.where(
+    (a) =>
+        (a.email.toLowerCase() == inputUser ||
+            a.nama.toLowerCase() == inputUser ||
+            a.hp == userCtrl.text.trim()) &&
+        a.sandi == inputSandi,
+  );
+
+  if (loginDosen) {
+    akunAktif = daftarAkun.firstWhere(
+      (a) => a.nama.toLowerCase() == 'user',
     );
-
-    if (cocok.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Akun atau kata sandi salah'),
-        ),
-      );
-      return;
-    }
-
+  } else if (cocok.isNotEmpty) {
     akunAktif = cocok.first;
-
-    debugPrint('LOGIN BERHASIL: menuju BerandaPage');
-
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const BerandaPage(),
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Akun atau kata sandi salah'),
       ),
     );
+    return;
   }
+
+  debugPrint('LOGIN BERHASIL: menuju BerandaPage');
+
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const BerandaPage(),
+    ),
+  );
+}
 
   Widget label(String teks) {
     return Padding(

@@ -26,6 +26,8 @@ Akun? akunUntukReset;
 
 // Akun bawaan
 final List<Akun> daftarAkun = [
+
+  // Akun pribadi
   Akun(
     nama: 'Aisq',
     email: 'aisqsaryala@gmail.com',
@@ -34,6 +36,15 @@ final List<Akun> daftarAkun = [
     fotoPath: 'lib/images/pic.jpg',
     fotoPathBaru: 'lib/images/image 2.png',
   ),
+
+  // Akun demo untuk dosen
+  Akun(
+    nama: 'user',
+    email: 'user@ecowalk.com',
+    hp: '080000000000',
+    sandi: '1234',
+  ),
+
 ];
 
 // Memuat akun dari penyimpanan HP
