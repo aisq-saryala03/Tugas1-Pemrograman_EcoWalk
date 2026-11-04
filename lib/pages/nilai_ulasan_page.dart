@@ -1,8 +1,12 @@
-
 import 'package:flutter/material.dart';
 
 class NilaiUlasanPage extends StatefulWidget {
-  const NilaiUlasanPage({super.key});
+  final Map<String, dynamic>? ulasanBaru;
+
+  const NilaiUlasanPage({
+    super.key,
+    this.ulasanBaru,
+  });
 
   @override
   State<NilaiUlasanPage> createState() => _NilaiUlasanPageState();
@@ -67,6 +71,19 @@ class _NilaiUlasanPageState extends State<NilaiUlasanPage> {
       'lengkap': false,
     },
   ];
+
+  // ============================================================
+  // MEMASUKKAN ULASAN BARU
+  // ============================================================
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.ulasanBaru != null) {
+      daftarUlasan.insert(0, widget.ulasanBaru!);
+    }
+  }
 
   // ============================================================
   // 3. PENGOLAHAN DATA ULASAN
@@ -430,94 +447,96 @@ class _NilaiUlasanPageState extends State<NilaiUlasanPage> {
     final bool tampilkanSemua = data['lengkap'] as bool;
     final bool punyaFoto = data['foto'] as bool;
 
-    return Container(
-      // ATUR POSISI DAN JARAK ANTARKARTU
-      margin: const EdgeInsets.only(
-        bottom: 16,
-        left: 0,
-        right: 0,
-      ),
-
-      // ATUR JARAK ISI DARI TEPI KARTU
-      padding: const EdgeInsets.all(13),
-
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(7),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.18),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DetailUlasanPage(data: data),
           ),
-        ],
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // NAMA PENGULAS DAN RATING
-          identitasPengulas(data),
-
-          const SizedBox(height: 12),
-
-          // TEKS ULASAN
-          Text(
-            isiUlasan,
-            maxLines: tampilkanSemua ? null : 3,
-            overflow: tampilkanSemua
-                ? TextOverflow.visible
-                : TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 10, // Ukuran teks ulasan
-              height: 1.5,  // Jarak antarbaris
-              color: Colors.black,
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(13),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(7),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-          ),
-
-          const SizedBox(height: 5),
-
-          // TOMBOL SELENGKAPNYA
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                data['lengkap'] = !tampilkanSemua;
-              });
-            },
-            child: const Text(
-              'Selengkapnya',
-              style: TextStyle(
-                color: warnaBiru,
-                fontSize: 9, // Ukuran teks tombol
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-
-          // FOTO ULASAN
-          if (punyaFoto) ...[
-            const SizedBox(height: 10),
-            fotoUlasan(),
           ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // NAMA PENGULAS DAN RATING
+            identitasPengulas(data),
 
-          const SizedBox(height: 10),
+            const SizedBox(height: 12),
 
-          // TANGGAL ULASAN
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Text(
-              'Dinilai pada ${data['tanggal']}',
+            // TEKS ULASAN
+            Text(
+              isiUlasan,
+              maxLines: tampilkanSemua ? null : 3,
+              overflow: tampilkanSemua
+                  ? TextOverflow.visible
+                  : TextOverflow.ellipsis,
               style: const TextStyle(
-                fontSize: 8, // Ukuran teks tanggal
-                fontWeight: FontWeight.bold,
-                color: Colors.black54,
+                fontSize: 10,
+                height: 1.5,
+                color: Colors.black,
               ),
             ),
-          ),
-        ],
+
+            const SizedBox(height: 5),
+
+            // TOMBOL SELENGKAPNYA
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  data['lengkap'] = !tampilkanSemua;
+                });
+              },
+              child: const Text(
+                'Selengkapnya',
+                style: TextStyle(
+                  color: warnaBiru,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+
+            // FOTO ULASAN
+            if (punyaFoto) ...[
+              const SizedBox(height: 10),
+              fotoUlasan(),
+            ],
+
+            const SizedBox(height: 10),
+
+            // TANGGAL ULASAN
+            Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                'Dinilai pada ${data['tanggal']}',
+                style: const TextStyle(
+                  fontSize: 8,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black54,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+
 
 
   // ============================================================
@@ -635,4 +654,209 @@ class _NilaiUlasanPageState extends State<NilaiUlasanPage> {
       ),
     );
   }
+}
+
+
+class DetailUlasanPage extends StatelessWidget {
+  final Map<String, dynamic> data;
+
+  const DetailUlasanPage({
+    super.key,
+    required this.data,
+  });
+
+  static const Color warnaHijau = Color(0xFF196858);
+  static const Color warnaAbu = Color(0xFFD9D9D9);
+  static const Color warnaBiru = Color(0xFF42A5F5);
+
+  // ============================================================
+  // 1. HEADER
+  // ============================================================
+
+  Widget header(BuildContext context) {
+    return Container(
+      height: 54,
+      width: double.infinity,
+      color: warnaHijau,
+      child: Row(
+        children: [
+          IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+              size: 23,
+            ),
+          ),
+          const Text(
+            'Nilai & Ulasan',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ============================================================
+  // 2. IDENTITAS PENGULAS
+  // ============================================================
+
+  Widget identitasPengulas() {
+    return Row(
+      children: [
+        const CircleAvatar(
+          radius: 15,
+          backgroundColor: warnaAbu,
+          child: Icon(
+            Icons.person,
+            color: Colors.white,
+            size: 19,
+          ),
+        ),
+
+        const SizedBox(width: 10),
+
+        Expanded(
+          child: Text(
+            data['sembunyikanNama'] == true
+                ? 'Pengguna Anonim'
+                : data['nama'] as String,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+        ),
+
+        Container(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 5,
+            vertical: 3,
+          ),
+          decoration: BoxDecoration(
+            color: warnaHijau,
+            borderRadius: BorderRadius.circular(3),
+          ),
+          child: Text(
+            '${data['rating']}.0 / 5.0',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 8,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // ============================================================
+  // 3. FOTO ULASAN
+  // ============================================================
+
+  Widget fotoUlasan() {
+    return Row(
+      children: [
+        kotakFoto(),
+        const SizedBox(width: 10),
+        kotakFoto(),
+      ],
+    );
+  }
+
+  Widget kotakFoto() {
+    return Container(
+      width: 59,
+      height: 59,
+      color: warnaAbu,
+      child: const Icon(
+        Icons.image_outlined,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  // ============================================================
+  // 4. DETAIL ISI ULASAN
+  // ============================================================
+
+  Widget isiDetailUlasan() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(26, 19, 26, 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          identitasPengulas(),
+
+          const SizedBox(height: 15),
+
+          Text(
+            data['ulasan'] as String,
+            style: const TextStyle(
+              fontSize: 9,
+              height: 1.6,
+              color: Colors.black,
+            ),
+          ),
+
+          if (data['foto'] == true) ...[
+            const SizedBox(height: 17),
+            fotoUlasan(),
+          ],
+
+          const SizedBox(height: 20),
+
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Text(
+              'Dinilai pada ${data['tanggal']}',
+              style: const TextStyle(
+                fontSize: 7,
+                fontWeight: FontWeight.bold,
+                color: Colors.black54,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 35),
+
+          const Divider(
+            color: Color(0xFFE0E0E0),
+            thickness: 0.8,
+          ),
+        ],
+      ),
+    );
+  }
+
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Column(
+        children: [
+          // HEADER
+          header(context),
+
+          // KONTEN DETAIL ULASAN
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: isiDetailUlasan(),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
 }

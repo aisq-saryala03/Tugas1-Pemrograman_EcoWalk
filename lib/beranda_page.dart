@@ -5,6 +5,10 @@ import '../pages/detail_wisata_page.dart';
 import '../pages/beri_ulasan_page.dart';
 import '../pages/kategori_wisata_page.dart';
 import '../pages/cuaca_page.dart';
+import '../pages/notifikasi_page.dart';
+import '../pages/rekap_perjalanan_page.dart';
+import '../pages/terakhir_dilihat_page.dart';
+import '../pages/rekomendasi_page.dart';
 
 class BerandaPage extends StatefulWidget {
   const BerandaPage({super.key});
@@ -43,6 +47,7 @@ class _BerandaPageState extends State<BerandaPage> {
   int bintangDipilih = 0;
 
 
+
   // ==========================================================
   // 3. HEADER BERANDA
   // ==========================================================
@@ -64,16 +69,27 @@ class _BerandaPageState extends State<BerandaPage> {
 
           const Spacer(),
 
-          // IKON DI SEBELAH KANAN
-          gambar(
-            'Frame 1.png',
-            lebar: 85,
-            tinggi: 45,
+          // IKON NOTIFIKASI
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const NotifikasiPage(),
+                ),
+              );
+            },
+            child: gambar(
+              'Frame 1.png',
+              lebar: 85,
+              tinggi: 45,
+            ),
           ),
         ],
       ),
     );
   }
+
 
 
   // ==========================================================
@@ -123,33 +139,69 @@ class _BerandaPageState extends State<BerandaPage> {
     );
   }
 
-  // ==========================================================
-  // 6. DAFTAR GAMBAR HORIZONTAL
-  // Ubah namaGambar, lebar, atau tinggi sesuai kebutuhan.
-  // ==========================================================
 
-  Widget daftarGambar({
-    required List<String> namaGambar,
-    required double lebar,
-    required double tinggi,
-  }) {
-    return SizedBox(
-      height: tinggi,
-      child: ListView.separated(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        scrollDirection: Axis.horizontal,
-        itemCount: namaGambar.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 20),
-        itemBuilder: (context, index) {
-          return GestureDetector(
+// ==========================================================
+// 6. DAFTAR GAMBAR HORIZONTAL
+// ==========================================================
+
+Widget daftarGambar({
+  required List<String> namaGambar,
+  required double lebar,
+  required double tinggi,
+  bool bukaRekapPerjalanan = false,
+  bool bukaKategori = false,
+}) {
+  return SizedBox(
+    width: double.infinity,
+    height: tinggi,
+
+    child: ListView.separated(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      primary: false,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+
+      itemCount: namaGambar.length,
+      separatorBuilder: (context, index) {
+        return const SizedBox(width: 16);
+      },
+
+      itemBuilder: (context, index) {
+        return SizedBox(
+          width: lebar,
+          height: tinggi,
+
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const DetailWisataPage(),
-                ),
-              );
+              if (bukaRekapPerjalanan) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const RekapPerjalananPage(),
+                  ),
+                );
+              } else if (bukaKategori) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const KategoriWisataPage(),
+                  ),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        const DetailWisataPage(),
+                  ),
+                );
+              }
             },
+
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10),
               child: gambar(
@@ -159,11 +211,12 @@ class _BerandaPageState extends State<BerandaPage> {
                 fit: BoxFit.fill,
               ),
             ),
-          );
-        },
-      ),
-    );
-  }
+          ),
+        );
+      },
+    ),
+  );
+}
 
   // ==========================================================
   // 7. KARTU ULASAN PERJALANAN
@@ -315,52 +368,76 @@ class _BerandaPageState extends State<BerandaPage> {
       );
     }
 
-  // ==========================================================
-// 9. JUDUL DENGAN AKSI SELENGKAPNYA
-// ==========================================================
 
-Widget judulDenganAksi(
-  String judul, {
-  String teksAksi = 'Selengkapnya',
-}) {
-  return Padding(
-    padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
-    child: Row(
-      children: [
-        Expanded(
-          child: Text(
-            judul,
-            style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.bold,
+  // ==========================================================
+  // 9. JUDUL DENGAN AKSI SELENGKAPNYA
+  // ==========================================================
+
+
+  Widget judulDenganAksi(
+    String judul, {
+    String teksAksi = 'Selengkapnya',
+  }) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              judul,
+              style: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        GestureDetector(
-          onTap: () {
-            if (teksAksi == 'Jelajahi') {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const KategoriWisataPage(),
-                ),
-              );
-            }
-          },
-          child: Text(
-            teksAksi,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
+
+          GestureDetector(
+            onTap: () {
+              if (teksAksi == 'Jelajahi') {
+                // Jelajahi menuju halaman Kategori Wisata
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const KategoriWisataPage(),
+                  ),
+                );
+              } else if (judul == 'Kunjungi Lagi') {
+                // Selengkapnya menuju Rekap Perjalanan
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const RekapPerjalananPage(),
+                  ),
+                );
+              } else if (judul == 'Terakhir Dilihat') {
+                // Selengkapnya menuju halaman Terakhir Dilihat
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TerakhirDilihatPage(),
+                  ),
+                );
+              }
+            },
+            child: Text(
+              teksAksi,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 6),
-        const Icon(Icons.chevron_right, size: 18),
-      ],
-    ),
-  );
-}
+
+          const SizedBox(width: 6),
+
+          const Icon(Icons.chevron_right, size: 18),
+        ],
+      ),
+    );
+  }
+
+
 
   // ==========================================================
   // 10. BANNER PERBANDINGAN
@@ -390,18 +467,29 @@ Widget judulDenganAksi(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: gambar(
-            'Group 2.png',
-            lebar: 145,
-            tinggi: 220,
-            fit: BoxFit.fill,
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TerakhirDilihatPage(),
+              ),
+            );
+          },
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: gambar(
+              'Group 2.png',
+              lebar: 145,
+              tinggi: 220,
+              fit: BoxFit.fill,
+            ),
           ),
         ),
       ),
     );
   }
+
 
 
   // ==========================================================
@@ -450,7 +538,7 @@ Widget judulDenganAksi(
           Row(
             children: [
               itemNavigasi(0, Icons.home_outlined, 'BERANDA'),
-              itemNavigasi(1, Icons.verified_user, ''),
+              itemNavigasi(1, Icons.verified_user, 'REKOMENDASI'),
               itemNavigasi(2, Icons.favorite, ''),
               itemNavigasi(3, Icons.person, ''),
             ],
@@ -470,6 +558,18 @@ Widget judulDenganAksi(
     return Expanded(
       child: GestureDetector(
         onTap: () {
+          // MENU REKOMENDASI
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RekomendasiPage(),
+              ),
+            );
+            return;
+          }
+
+          // MENU PROFIL
           if (index == 3) {
             Navigator.push(
               context,
@@ -480,19 +580,16 @@ Widget judulDenganAksi(
             return;
           }
 
+          // MENU BERANDA DAN AKTIVITAS
           setState(() {
             halamanAktif = index;
           });
 
-          if (index != 0) {
+          if (index == 2) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  index == 1
-                      ? 'Menu Tantangan dipilih'
-                      : 'Menu Aktivitas dipilih',
-                ),
-                duration: const Duration(milliseconds: 800),
+              const SnackBar(
+                content: Text('Menu Aktivitas dipilih'),
+                duration: Duration(milliseconds: 800),
               ),
             );
           }
@@ -541,7 +638,7 @@ Widget judulDenganAksi(
                   ),
                 ),
 
-              // LABEL BERANDA
+              // LABEL MENU AKTIF
               if (aktif && label.isNotEmpty)
                 Positioned(
                   top: 70,
@@ -587,10 +684,13 @@ Widget judulDenganAksi(
                     // CUACA
                     kartuCuaca(),
 
-                    // REKOMENDASI
                     judulBagian('Rekomendasi'),
                     daftarGambar(
                       namaGambar: [
+                        'Frame 2.png',
+                        'Frame 2.png',
+                        'Frame 2.png',
+                        'Frame 2.png',
                         'Frame 2.png',
                       ],
                       lebar: 390,
@@ -611,26 +711,34 @@ Widget judulDenganAksi(
                       'Pilihan Teratas',
                       teksAksi: 'Jelajahi',
                     ),
+
                     daftarGambar(
                       namaGambar: [
+                        'Frame 3.png',
+                        'Frame 3.png',
+                        'Frame 3.png',
                         'Frame 3.png',
                       ],
                       lebar: 450,
                       tinggi: 130,
+                      bukaKategori: true,
                     ),
 
                     // BANNER
                     bannerPerbandingan(),
 
-                    // KUNJUNGI LAGI
-                    judulDenganAksi('Kunjungi Lagi'),
-                    daftarGambar(
-                      namaGambar: [
-                        'Frame 3.png',
-                      ],
-                      lebar: 450,
-                      tinggi: 130,
-                    ),
+
+                  // KUNJUNGI LAGI
+                  judulDenganAksi('Kunjungi Lagi'),
+                  daftarGambar(
+                    namaGambar: [
+                      'Frame 3.png',
+                    ],
+                    lebar: 450,
+                    tinggi: 130,
+                    bukaRekapPerjalanan: true,
+                  ),
+
 
                     // TERAKHIR DILIHAT
                     judulDenganAksi('Terakhir Dilihat'),

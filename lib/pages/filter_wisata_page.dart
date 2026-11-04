@@ -508,6 +508,7 @@ class _FilterWisataPageState extends State<FilterWisataPage> {
 
 
 
+
 class UrutkanWisataSheet extends StatefulWidget {
   final String urutanAwal;
 
@@ -570,7 +571,7 @@ class _UrutkanWisataSheetState
           children: [
             const SizedBox(height: 15),
 
-            // Garis kecil di bagian atas panel
+            // Garis kecil bagian atas
             Container(
               width: 98,
               height: 12,
@@ -616,7 +617,7 @@ class _UrutkanWisataSheetState
               color: Color(0xFFE7E7E7),
             ),
 
-            // Pilihan urutan
+            // Daftar pilihan pengurutan
             ...opsi.map((item) {
               final aktif = pilihan == item['value'];
 
@@ -632,7 +633,7 @@ class _UrutkanWisataSheetState
                   height: 45,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
+                      horizontal: 26,
                     ),
                     child: Row(
                       children: [
@@ -652,10 +653,10 @@ class _UrutkanWisataSheetState
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
                             color: aktif
-                                ? const Color(0xFF1A6556)
-                                : const Color(0xFFF2F2F2),
+                                ? const Color(0xFF196657)
+                                : Colors.white,
                             border: Border.all(
-                              color: const Color(0xFF1A6556),
+                              color: const Color(0xFF196657),
                               width: 1,
                             ),
                           ),

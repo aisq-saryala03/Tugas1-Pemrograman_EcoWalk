@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
-import 'filter_wisata_page.dart';
+import '../pages/filter_wisata_page.dart';
+import '../pages/detail_wisata_page.dart';
 
 const Color hijauEco = Color(0xFF196657);
 
@@ -148,6 +148,7 @@ class _KategoriWisataPageState extends State<KategoriWisataPage> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.2),
       builder: (context) => UrutkanWisataSheet(
         urutanAwal: urutanAktif,
       ),
@@ -179,7 +180,7 @@ class _KategoriWisataPageState extends State<KategoriWisataPage> {
           children: [
             // HEADER
             Container(
-              height: 54,
+              height: 63,
               width: double.infinity,
               color: hijauEco,
               child: Row(
@@ -195,7 +196,7 @@ class _KategoriWisataPageState extends State<KategoriWisataPage> {
                   const Text(
                     'Kategori',
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 19,
                       fontWeight: FontWeight.w700,
                       color: Colors.white,
                     ),
@@ -374,11 +375,10 @@ class _KategoriWisataPageState extends State<KategoriWisataPage> {
                       itemBuilder: (context, index) {
                         return InkWell(
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Destinasi ${hasilWisata[index]['nama']} dipilih',
-                                ),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DetailWisataPage(),
                               ),
                             );
                           },
@@ -432,7 +432,7 @@ class _KategoriWisataPageState extends State<KategoriWisataPage> {
   }
 }
 
-// BOTTOM SHEET URUTKAN
+
 class UrutkanWisataSheet extends StatefulWidget {
   final String urutanAwal;
 
@@ -450,6 +450,29 @@ class _UrutkanWisataSheetState
     extends State<UrutkanWisataSheet> {
   late String pilihan;
 
+  final List<Map<String, String>> opsi = [
+    {
+      'label': 'Direkomendasikan',
+      'value': 'rekomendasi',
+    },
+    {
+      'label': 'Harga Tertinggi',
+      'value': 'harga_tertinggi',
+    },
+    {
+      'label': 'Harga Terendah',
+      'value': 'harga_terendah',
+    },
+    {
+      'label': 'Ulasan Terbaik',
+      'value': 'ulasan',
+    },
+    {
+      'label': 'Jarak Terdekat',
+      'value': 'jarak',
+    },
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -459,7 +482,6 @@ class _UrutkanWisataSheetState
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(
@@ -470,59 +492,117 @@ class _UrutkanWisataSheetState
         top: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Center(
-              child: Text(
-                'Urutkan Destinasi',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            // Garis kecil bagian atas
             const SizedBox(height: 15),
-            _opsi('Default', 'default'),
-            _opsi('Harga terendah', 'harga'),
-            _opsi('Rating tertinggi', 'rating'),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: hijauEco,
-                  foregroundColor: Colors.white,
-                ),
-                onPressed: () {
-                  Navigator.pop(context, pilihan);
-                },
-                child: const Text('Terapkan'),
+            Container(
+              width: 98,
+              height: 10,
+              decoration: BoxDecoration(
+                color: const Color(0xFFD9D9D9),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
+
+            // Judul dan tombol tutup
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                16, 12, 8, 8,
+              ),
+              child: Row(
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'Urutkan',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.black,
+                      size: 23,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const Divider(
+              height: 1,
+              color: Color(0xFFE7E7E7),
+            ),
+
+            // Daftar pilihan pengurutan
+            ...opsi.map((item) {
+              final aktif = pilihan == item['value'];
+
+              return InkWell(
+                onTap: () {
+                  Navigator.pop(
+                    context,
+                    item['value'],
+                  );
+                },
+                child: SizedBox(
+                  height: 45,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 26,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            item['label']!,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+
+                        // Lingkaran pilihan
+                        Container(
+                          width: 19,
+                          height: 19,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: const Color(0xFF196657),
+                              width: 1,
+                            ),
+                          ),
+                          child: aktif
+                              ? Center(
+                                  child: Container(
+                                    width: 9,
+                                    height: 9,
+                                    decoration: const BoxDecoration(
+                                      color: Color(0xFF196657),
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                )
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+
+            const SizedBox(height: 8),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _opsi(String judul, String nilai) {
-    return RadioListTile<String>(
-      contentPadding: EdgeInsets.zero,
-      dense: true,
-      activeColor: hijauEco,
-      title: Text(
-        judul,
-        style: const TextStyle(fontSize: 13),
-      ),
-      value: nilai,
-      groupValue: pilihan,
-      onChanged: (value) {
-        if (value != null) {
-          setState(() {
-            pilihan = value;
-          });
-        }
-      },
     );
   }
 }

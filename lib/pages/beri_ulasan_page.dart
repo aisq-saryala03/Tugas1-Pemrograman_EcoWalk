@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../pages/nilai_ulasan_page.dart';
 
 class BeriUlasanPage extends StatefulWidget {
   const BeriUlasanPage({super.key});
@@ -189,7 +190,7 @@ class _BeriUlasanPageState extends State<BeriUlasanPage> {
                                       ? Icons.star
                                       : Icons.star_border,
                                   size: 39,
-                                  color: Colors.black,
+                                  color: Colors.amber,
                                 ),
                               ),
                             );
@@ -347,25 +348,46 @@ class _BeriUlasanPageState extends State<BeriUlasanPage> {
                         width: double.infinity,
                         height: 53,
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (rating == 0) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    'Silakan pilih rating bintang terlebih dahulu',
-                                  ),
+                        onPressed: () {
+                          if (rating == 0) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Silakan pilih rating bintang terlebih dahulu',
                                 ),
-                              );
-                              return;
-                            }
+                              ),
+                            );
+                            return;
+                          }
 
-                            Navigator.pop(context, {
-                              'rating': rating,
-                              'ulasan': ulasanController.text,
-                              'sembunyikanNama': sembunyikanNama,
-                            });
-                          },
+                          if (ulasanController.text.trim().isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Silakan tuliskan ulasan terlebih dahulu'),
+                              ),
+                            );
+                            return;
+                          }
+
+                          final Map<String, dynamic> ulasanBaru = {
+                            'nama': 'Kaisyarani Zahra',
+                            'rating': rating,
+                            'tanggal': '3 November 2026',
+                            'ulasan': ulasanController.text.trim(),
+                            'foto': false,
+                            'sembunyikanNama': sembunyikanNama,
+                            'lengkap': false,
+                          };
+
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NilaiUlasanPage(
+                                ulasanBaru: ulasanBaru,
+                              ),
+                            ),
+                          );
+                        },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: hijau,
                             foregroundColor: Colors.white,
@@ -388,31 +410,6 @@ class _BeriUlasanPageState extends State<BeriUlasanPage> {
                     const SizedBox(height: 24),
                   ],
                 ),
-              ),
-            ),
-
-            // Navigasi bawah
-            Container(
-              height: 58,
-              decoration: const BoxDecoration(
-                border: Border(
-                  top: BorderSide(color: Color(0xFFEEEEEE)),
-                ),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Icon(
-                    Icons.crop_square,
-                    color: Colors.blue,
-                    size: 24,
-                  ),
-                  Icon(
-                    Icons.crop_square,
-                    color: Colors.blue,
-                    size: 24,
-                  ),
-                ],
               ),
             ),
           ],

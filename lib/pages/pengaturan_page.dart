@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../pages/verification_page.dart';
 
@@ -208,7 +207,7 @@ class HalamanPengaturanDetail extends StatelessWidget {
   static const double ukuranJudulHeader = 18;
   static const double ukuranLabel = 14;
   static const double ukuranHint = 14;
-  static const double ukuranTeksInput = 25;
+  static const double ukuranTeksInput = 18;
   static const double ukuranIkon = 25;
   static const double ukuranTombol = 15;
 
@@ -648,7 +647,7 @@ class _HalamanUbahKataSandiState
               // TEKS ABU-ABU DALAM KOTAK
               hintText: hint,
               hintStyle: const TextStyle(
-                fontSize: ukuranHint,
+                fontSize: 18,
                 color: warnaHint,
                 fontStyle: FontStyle.italic,
               ),

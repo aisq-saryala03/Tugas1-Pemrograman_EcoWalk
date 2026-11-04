@@ -73,9 +73,22 @@ flutter:
       - lib/images/foto_profil.png
       - lib/images/background.png
       - lib/images/robot.png
-      - lib/images/cuaca.png
       - lib/images/image 1.png
       - lib/images/image 2.png
+      - lib/images/image 3.png
+      - lib/images/image 4.png
+      - lib/images/image 5.png
+      - lib/images/image 6.png
+      - lib/images/image 7.png
+      - lib/images/image 8.png
+      - lib/images/image 9.png
+      - lib/images/image 10.png
+      - lib/images/image 11.png
+      - lib/images/image 12.png
+      - lib/images/image 13.png
+      - lib/images/image 14.png
+      - lib/images/image 15.png
+      - lib/images/image 16.png
       - lib/images/Component 1.png
       - lib/images/Component 2.png
       - lib/images/Component 3.png
@@ -83,6 +96,19 @@ flutter:
       - lib/images/Group 2.png
       - lib/images/Group 3.png
       - lib/images/Group 4.png
+      - lib/images/Group 5.png
+      - lib/images/Group 6.png
+      - lib/images/Group 7.png
+      - lib/images/Group 8.png
+      - lib/images/Group 9.png
+      - lib/images/Group 10.png
+      - lib/images/Group 11.png
+      - lib/images/Group 12.png
+      - lib/images/Group 13.png
+      - lib/images/Group 14.png
+      - lib/images/Group 15.png
+      - lib/images/Group 16.png
+      - lib/images/Group 17.png
       - lib/images/Frame 1.png
       - lib/images/Frame 2.png
       - lib/images/Frame 3.png
@@ -92,6 +118,14 @@ flutter:
       - lib/images/Frame 7.png
       - lib/images/Frame 8.png
       - lib/images/Frame 9.png
+      - lib/images/Frame 10.png
+      - lib/images/Frame 11.png
+      - lib/images/Frame 12.png
+      - lib/images/Frame 13.png
+      - lib/images/Frame 14.png
+      - lib/images/Frame 15.png
+      - lib/images/Frame 17.png
+
 
 
   #   - images/a_dot_burr.jpeg

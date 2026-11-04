@@ -10,7 +10,10 @@ class CuacaPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: latar,
+
+      // HEADER
       appBar: AppBar(
+        toolbarHeight: 54,
         backgroundColor: hijau,
         foregroundColor: Colors.white,
         elevation: 0,
@@ -21,49 +24,53 @@ class CuacaPage extends StatelessWidget {
         title: const Text(
           'Cuaca',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
+            fontSize: 19,
+            fontWeight: FontWeight.w900,
           ),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(16, 24, 16, 28),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Prakiraan Cuaca',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 3),
-              const Text(
-                'Klapanunggal, Bogor',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 12,
-                ),
-              ),
-              const SizedBox(height: 16),
 
-              // Suhu dan ikon cuaca
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Expanded(
-                    child: Column(
+      // ISI HALAMAN
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 30, 16, 28),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // JUDUL PRAKIRAAN CUACA
+            const Text(
+              'Prakiraan Cuaca',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 3),
+            const Text(
+              'Klapanunggal, Bogor',
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+
+            // SUHU DAN GAMBAR CUACA
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: Transform.translate(
+                    offset: const Offset(0, -64),
+                    child: const Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
                           '30°C',
                           style: TextStyle(
                             color: Colors.black,
-                            fontSize: 48,
-                            fontWeight: FontWeight.w700,
+                            fontSize: 50,
+                            fontWeight: FontWeight.w900,
                             height: 1.05,
                           ),
                         ),
@@ -79,18 +86,25 @@ class CuacaPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Image.asset(
-                    'lib/images/cuaca.png',
-                    width: 105,
-                    height: 105,
+                ),
+                Transform.translate(
+                  offset: const Offset(0, -87),
+                  child: Image.asset(
+                    'lib/images/image 3.png',
+                    width: 210,
+                    height: 245,
                     fit: BoxFit.contain,
                   ),
-                ],
-              ),
-              const SizedBox(height: 30),
+                ),
+              ],
+            ),
 
-              // Informasi kelembapan dan kualitas udara
-              Row(
+            const SizedBox(height: 5),
+
+            // KELEMBAPAN DAN KUALITAS UDARA
+            Transform.translate(
+              offset: const Offset(0, -115),
+              child: Row(
                 children: [
                   Expanded(
                     child: _infoCard(
@@ -109,147 +123,131 @@ class CuacaPage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 22),
+            ),
 
-              const Text(
-                'Hari ini',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              const SizedBox(height: 12),
+            const SizedBox(height: 14),
 
-              // Prakiraan cuaca per jam
-              SizedBox(
-                height: 90,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 7,
-                  separatorBuilder: (_, __) =>
-                      const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final jam = [
-                      'Sekarang',
-                      '07:00',
-                      '10:00',
-                      '13:00',
-                      '16:00',
-                      '19:00',
-                      '22:00',
-                    ][index];
+            // =====================================
+            // PRAKIRAAN CUACA PER JAM
+            // =====================================
 
-                    return Container(
-                      width: 78,
-                      padding: const EdgeInsets.symmetric(vertical: 5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: const Color(0xFFE7E7E7),
+            Transform.translate(
+              offset: const Offset(0, -100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Hari ini',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // GAMBAR BISA DIGESER KE SAMPING
+                  SizedBox(
+                    height: 90,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const BouncingScrollPhysics(),
+                      children: [
+                        Image.asset(
+                          'lib/images/Frame 10.png',
+                          width: MediaQuery.of(context).size.width - 32,
+                          height: 90,
+                          fit: BoxFit.fill,
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'lib/images/cuaca.png',
-                            width: 34,
-                            height: 34,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 2),
-                          const Text(
-                            '30°C',
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Text(
-                            jam,
-                            style: const TextStyle(
-                              fontSize: 10,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 32),
 
-              // Prakiraan hari ini dan besok
-              Container(
+                        const SizedBox(width: 10),
+
+                        Image.asset(
+                          'lib/images/Frame 10.png',
+                          width: MediaQuery.of(context).size.width - 32,
+                          height: 90,
+                          fit: BoxFit.fill,
+                        ),
+
+                        const SizedBox(width: 10),
+
+                        Image.asset(
+                          'lib/images/Frame 10.png',
+                          width: MediaQuery.of(context).size.width - 32,
+                          height: 90,
+                          fit: BoxFit.fill,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 31),
+
+            // PRAKIRAAN HARI INI DAN BESOK
+            Transform.translate(
+              offset: const Offset(0, -100),
+              child: SizedBox(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: const [
-                    BoxShadow(
-                      color: Color(0x33000000),
-                      blurRadius: 4,
-                      offset: Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: const Column(
-                  children: [
-                    _PrakiraanHarian(
-                      hari: 'Hari Ini',
-                      suhu: '30°C / 20°C',
-                    ),
-                    SizedBox(height: 10),
-                    _PrakiraanHarian(
-                      hari: 'Besok',
-                      suhu: '30°C / 20°C',
-                    ),
-                  ],
+                child: Image.asset(
+                  'lib/images/Group 5.png',
+                  fit: BoxFit.fitWidth,
                 ),
               ),
-              const SizedBox(height: 32),
+            ),
 
-              // Aktivitas harian
-              const Text(
-                'Aktivitas Harian',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                ),
+            const SizedBox(height: 32),
+
+            // AKTIVITAS HARIAN
+            Transform.translate(
+              offset: const Offset(0, -100),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Aktivitas Harian',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+
+                  const SizedBox(height: 14),
+
+                  const _AktivitasCuaca(
+                    icon: Icons.sentiment_satisfied_alt_outlined,
+                    teks: 'Berjalan-jalan adalah pilihan terbaik saat ini !',
+                    subteks: 'Lihat Destinasi Wisata',
+                    warnaSubteks: Color(0xFF1F99D1),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  const _AktivitasCuaca(
+                    icon: Icons.umbrella_outlined,
+                    teks: 'Jangan lupa bawa payung untuk berjaga-jaga',
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  const _AktivitasCuaca(
+                    icon: Icons.home_outlined,
+                    teks: 'Aktivitas outdoor direkomendasikan',
+                  ),
+                ],
               ),
-              const SizedBox(height: 14),
-              const _AktivitasCuaca(
-                icon: Icons.sentiment_satisfied_alt,
-                teks: 'Berjalan-jalan adalah pilihan terbaik saat ini !',
-                subteks: 'Lihat Destinasi Wisata',
-                warnaSubteks: Color(0xFF1F99D1),
-              ),
-              const SizedBox(height: 12),
-              const _AktivitasCuaca(
-                icon: Icons.umbrella_outlined,
-                teks: 'Jangan lupa bawa payung untuk berjaga-jaga',
-              ),
-              const SizedBox(height: 12),
-              const _AktivitasCuaca(
-                icon: Icons.home_outlined,
-                teks: 'Aktivitas outdoor direkomendasikan',
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
+  // KARTU KELEMBAPAN DAN KUALITAS UDARA
   static Widget _infoCard({
     required IconData icon,
     required String label,
@@ -306,58 +304,7 @@ class CuacaPage extends StatelessWidget {
   }
 }
 
-class _PrakiraanHarian extends StatelessWidget {
-  final String hari;
-  final String suhu;
-
-  const _PrakiraanHarian({
-    required this.hari,
-    required this.suhu,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox(
-          width: 78,
-          child: Text(
-            hari,
-            style: const TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-        Image.asset(
-          'lib/images/cuaca.png',
-          width: 23,
-          height: 23,
-          fit: BoxFit.contain,
-        ),
-        const SizedBox(width: 22),
-        const Expanded(
-          child: Text(
-            'Cerah Berawan',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 12,
-            ),
-          ),
-        ),
-        Text(
-          suhu,
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
+// AKTIVITAS HARIAN
 class _AktivitasCuaca extends StatelessWidget {
   final IconData icon;
   final String teks;
